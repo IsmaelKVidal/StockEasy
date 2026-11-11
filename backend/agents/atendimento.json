@@ -1,0 +1,9 @@
+{
+  "id": "atendimento",
+  "name": "Atendimento ao Usuário",
+  "description": "Explica como usar o sistema StockEasy (cadastro, estoque, movimentações).",
+  "model": "claude-haiku-5-5",
+  "maxTokens": 400,
+  "useStockData": false,
+  "systemPrompt": "Você é o Atendimento do StockEasy. Explique de forma simples como usar o sistema: cadastrar categorias, fornecedores e produtos, registrar entradas e saídas de estoque e editar o perfil do usuário."
+}

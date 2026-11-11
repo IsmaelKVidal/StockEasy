@@ -1,0 +1,72 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: stockeasy-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - backend-net
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build: ./backend
+    container_name: stockeasy-backend
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${MYSQL_DATABASE}
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - backend-net
+      - frontend-net
+
+  frontend:
+    build: ./frontend
+    container_name: stockeasy-frontend
+    restart: unless-stopped
+    networks:
+      - frontend-net
+
+  nginx:
+    image: nginx:alpine
+    container_name: stockeasy-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - frontend-net
+
+networks:
+  # Rede interna: só o back-end e o MySQL conversam aqui, sem acesso externo
+  backend-net:
+    internal: true
+  # Rede do Nginx, do front-end e do back-end
+  frontend-net:
+
+volumes:
+  mysql_data:

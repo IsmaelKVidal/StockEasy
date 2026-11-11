@@ -1,0 +1,101 @@
+# Use com a extensão "REST Client" do VS Code.
+# Depois do login, copie o token retornado e cole abaixo.
+
+@host = http://localhost/api
+@token = COLE_O_TOKEN_AQUI
+
+### Saúde da API
+GET {{host}}/health
+
+### Cadastro
+POST {{host}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Maria Silva",
+  "email": "maria@email.com",
+  "cpf": "529.982.247-25",
+  "password": "Senha123"
+}
+
+### Login (copie o "token" da resposta)
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "maria@email.com",
+  "password": "Senha123"
+}
+
+### Editar usuário (troque o 1 pelo seu id)
+PUT {{host}}/users/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Maria S. Silva",
+  "cpf": "529.982.247-25"
+}
+
+### Tentar alterar e-mail (deve dar erro)
+PUT {{host}}/users/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "email": "outro@email.com"
+}
+
+### Categorias: criar
+POST {{host}}/categories
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "name": "Bebidas", "description": "Líquidos em geral" }
+
+### Categorias: listar (paginado)
+GET {{host}}/categories?page=1&limit=5
+Authorization: Bearer {{token}}
+
+### Categoria inexistente (404 amigável)
+GET {{host}}/categories/9999
+Authorization: Bearer {{token}}
+
+### Fornecedores: criar
+POST {{host}}/suppliers
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "name": "Distribuidora Sul", "email": "contato@sul.com", "phone": "44999990000" }
+
+### Produtos: criar (use os ids de categoria e fornecedor criados)
+POST {{host}}/products
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "name": "Suco de Uva 1L", "price": 7.5, "quantity": 20, "categoryId": 1, "supplierId": 1 }
+
+### Movimentações: entrada
+POST {{host}}/movements
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "productId": 1, "type": "ENTRADA", "quantity": 10, "note": "Compra de reposição" }
+
+### Movimentações: saída
+POST {{host}}/movements
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "productId": 1, "type": "SAIDA", "quantity": 5, "note": "Venda" }
+
+### Agentes: listar perfis
+GET {{host}}/agents
+Authorization: Bearer {{token}}
+
+### Agentes: conversar (precisa da ANTHROPIC_API_KEY no .env)
+POST {{host}}/agents/chat
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{ "agent": "reposicao", "message": "Quais produtos devo repor primeiro?" }

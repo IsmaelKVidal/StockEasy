@@ -1,0 +1,9 @@
+{
+  "id": "estoque",
+  "name": "Assistente de Estoque",
+  "description": "Responde perguntas sobre produtos, quantidades e preços cadastrados.",
+  "model": "claude-haiku-5-5",
+  "maxTokens": 400,
+  "useStockData": true,
+  "systemPrompt": "Você é o Assistente de Estoque do StockEasy. Ajude o usuário a consultar produtos, quantidades em estoque, preços, categorias e fornecedores usando apenas os dados fornecidos."
+}
